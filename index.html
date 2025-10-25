@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masaka Community Resource Map</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Masaka Community Resource Map</h1>
+            <p class="subtitle">Locate health centers, schools, and safety facilities in Masaka District</p>
+        </header>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Search facilities...">
+                        <button id="clear-search" class="clear-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h2>Facilities By Type</h2>
+                    <div class="filter-options">
+                        <div class="filter-option">
+                            <div class="filter-header">
+                                <input type="checkbox" id="health-filter" checked>
+                                <label for="health-filter">Health Centers</label>
+                            </div>
+                            <div class="facilities-list health-facilities">
+                                <div class="facility-item">Masaka Regional Referral Hospital</div>
+                                <div class="facility-item">Kitovu Hospital</div>
+                                <div class="facility-item">Masaka Diocesan Medical Centre</div>
+                                <div class="facility-item">Bishop Kivengere Memorial Clinic</div>
+                                <div class="facility-item">St. Francis Naggalama Hospital Branch</div>
+                            </div>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-header">
+                                <input type="checkbox" id="education-filter" checked>
+                                <label for="education-filter">Education Facilities</label>
+                            </div>
+                            <div class="facilities-list education-facilities">
+                                <div class="facility-item">Masaka Secondary School</div>
+                                <div class="facility-item">St. Henry's College Kitovu</div>
+                                <div class="facility-item">Uganda Martyrs University</div>
+                                <div class="facility-item">Masaka Primary School</div>
+                                <div class="facility-item">Blessed Sacrament Primary School</div>
+                                <div class="facility-item">Muteesa 1 Royal University</div>
+                            </div>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-header">
+                                <input type="checkbox" id="safety-filter" checked>
+                                <label for="safety-filter">Safety Facilities</label>
+                            </div>
+                            <div class="facilities-list safety-facilities">
+                                <div class="facility-item">Masaka Central Police Station</div>
+                                <div class="facility-item">Masaka Fire Station</div>
+                                <div class="facility-item">Masaka District Local Government</div>
+                                <div class="facility-item">Nyendo Police Post</div>
+                                <div class="facility-item">Masaka Emergency Ambulance Services</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-section">
+                    <h2>Facilities Statistics</h2>
+                    <div class="stat-item">
+                        <span>Total Facilities:</span>
+                        <span class="stat-value" id="total-count">16</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Health Centers:</span>
+                        <span class="stat-value" id="health-count">5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Education Facilities:</span>
+                        <span class="stat-value" id="education-count">6</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Safety Facilities:</span>
+                        <span class="stat-value" id="safety-count">5</span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <p>This application helps community members locate essential services in Masaka District. Click on any marker to see detailed information about the facility.</p>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+                
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <button id="my-location" class="control-btn">
+                        <i class="fas fa-location-arrow"></i>
+                        <span>My Location</span>
+                    </button>
+                    <button id="reset-view" class="control-btn">
+                        <i class="fas fa-globe-africa"></i>
+                        <span>Reset View</span>
+                    </button>
+                </div>
+
+                <!-- Legend and Scale Container -->
+                <div class="legend-scale-container">
+                    <div class="legend">
+                        <h3>FACILITIES</h3>
+                        
+                        <div class="legend-category">
+                            <h4>Health Centers</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="legend-icon health-marker">
+                                        <i class="fas fa-hospital marker-icon"></i>
+                                    </div>
+                                    <span>Hospital</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon health-marker">
+                                        <i class="fas fa-clinic-medical marker-icon"></i>
+                                    </div>
+                                    <span>Clinic</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon health-marker">
+                                        <i class="fas fa-first-aid marker-icon"></i>
+                                    </div>
+                                    <span>Medical Service</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="legend-category">
+                            <h4>Education Facilities</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="legend-icon education-marker">
+                                        <i class="fas fa-school marker-icon"></i>
+                                    </div>
+                                    <span>Secondary School</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon education-marker">
+                                        <i class="fas fa-university marker-icon"></i>
+                                    </div>
+                                    <span>University</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon education-marker">
+                                        <i class="fas fa-child marker-icon"></i>
+                                    </div>
+                                    <span>Primary School</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="legend-category">
+                            <h4>Safety Facilities</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="legend-icon safety-marker">
+                                        <i class="fas fa-shield-alt marker-icon"></i>
+                                    </div>
+                                    <span>Police Station</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon safety-marker">
+                                        <i class="fas fa-fire-extinguisher marker-icon"></i>
+                                    </div>
+                                    <span>Fire Station</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon safety-marker">
+                                        <i class="fas fa-ambulance marker-icon"></i>
+                                    </div>
+                                    <span>Emergency Service</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-icon safety-marker">
+                                        <i class="fas fa-landmark marker-icon"></i>
+                                    </div>
+                                    <span>Local Government</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scale Container -->
+                    <div class="scale-container">
+                        <div id="map-scale"></div>
+                    </div>
+                </div>
+
+                <!-- Location Details Container -->
+                <div id="location-details" class="location-details hidden">
+                    <div class="location-header">
+                        <h3>Your Current Location</h3>
+                        <button id="close-location-details" class="close-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="location-content">
+                        <div class="location-info">
+                            <div class="info-item">
+                                <strong>Latitude:</strong>
+                                <span id="current-lat">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Longitude:</strong>
+                                <span id="current-lng">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Address:</strong>
+                                <span id="current-address">Fetching address...</span>
+                            </div>
+                        </div>
+                        <div class="location-actions">
+                            <button id="copy-coordinates" class="action-btn">
+                                <i class="fas fa-copy"></i>
+                                Copy Coordinates
+                            </button>
+                            <button id="share-location" class="action-btn">
+                                <i class="fas fa-share"></i>
+                                Share Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About This Map</h4>
+                    <p>Community resource mapping application for Masaka District showing health centers, education facilities, and safety services.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Need Help?</h4>
+                    <div class="help-links">
+                        <a href="userguide.html"><i class="fas fa-question-circle"></i> User Guide</a>
+                        <a href="masaka-community@uganda.gov.ug"><i class="fas fa-envelope"></i> Contact Support</a>
+                        <a href="https://github.com/MUKIIBI-CPU/masaka-map/issues"><i class="fas fa-bug"></i> Report Issue</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <button id="print-map" class="footer-btn">
+                            <i class="fas fa-print"></i>
+                            Print Map
+                        </button>
+                        <button id="share-map" class="footer-btn">
+                            <i class="fas fa-share-alt"></i>
+                            Share Map
+                        </button>
+                        <button id="export-pdf" class="footer-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Masaka Community Resource Map | By MUKIIBI DEOGRACIUS | All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
